@@ -45,35 +45,35 @@ struct produce_args_t
 	bool* updated;
 	bool* exit;
 	long long int* value;
-	int n_value;
+	int consume_threads_count;
 
 	produce_args_t(
 		pthread_mutex_t* mutex,
 		bool* updated,
 		bool* exit,
 		long long* value,
-		const int n_value)
+		const int consume_threads_count)
 		:
 		mutex(mutex),
 		updated(updated),
 		exit(exit), value(value),
-		n_value(n_value)
+		consume_threads_count(consume_threads_count)
 	{
 	}
 };
 
 struct interrupt_args_t
 {
-	int n_value;
+	int consume_threads_count;
 	int* updated_id;
 	bool* exit;
 
 	interrupt_args_t(
 		bool* exit,
 		int* updated_id,
-		const int n_value)
+		const int consume_threads_count)
 		:
-		n_value(n_value),
+		consume_threads_count(consume_threads_count),
 		updated_id(updated_id),
 		exit(exit)
 	{
@@ -233,7 +233,7 @@ void* consumer_interrupter_routine(void* arg)
 	{
 		if (*interrupt_arg->updated_id == 0)
 		{
-			*interrupt_arg->updated_id = rand() % interrupt_arg->n_value;
+			*interrupt_arg->updated_id = rand() % interrupt_arg->consume_threads_count;
 		}
 		usleep(0);
 	}
