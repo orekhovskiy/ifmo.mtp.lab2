@@ -114,7 +114,7 @@ int main(const int argc, char* argv[])
 		return 1;
 	}
 	const auto consume_threads_count = strtol(argv[consume_threads_count_pos], nullptr, 10);
-	const auto delay_time = strtol(argv[delay_time_pos], nullptr, 10);
+	auto delay_time = strtol(argv[delay_time_pos], nullptr, 10);
 	if (consume_threads_count < 1 || delay_time < 0)
 	{
 		return 1;
@@ -159,8 +159,8 @@ int run_treads(const int consume_threads_count, int delay_time, const bool is_de
 
 int get_tid()
 {
-	static std::atomic<int> count_threads;
-	thread_local int id = count_threads++;
+	static std::atomic<int> threads_count;
+	thread_local int id = threads_count++;
 	return id;
 }
 
@@ -220,7 +220,8 @@ void* consumer_routine(void* arg)
 				pthread_mutex_unlock(consume_arg->mutex);
 			}
 		}
-		usleep(100);
+		const auto sleep = consume_arg->sleep == 0 ? 100 : 0;
+		usleep(sleep);
 	}
 	pthread_exit(reinterpret_cast<void*>(sum));
 	return nullptr;
